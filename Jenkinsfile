@@ -7,7 +7,7 @@ node {
    
     stage('Build APP') {
  
-	    withAnt(installation: 'myinstall') {
+	    withAnt(installation: 'Ant') {
                sh "ant default"
             }
     } 
