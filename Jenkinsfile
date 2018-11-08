@@ -16,7 +16,7 @@ node {
   stage('UrbanCode create version') {
    // class: Defines the Pipeline plug-in to define. The UCD Jenkins Pipeline plug-in’s class name is UCDeployPublisher
    step([$class: 'UCDeployPublisher',
-        siteName: 'ucd',
+        siteName: 'Default',
 	component: [
             $class: 'com.urbancode.jenkins.plugins.ucdeploy.VersionHelper$VersionBlock',
            componentName: 'JPetStore-APP',
@@ -34,7 +34,7 @@ node {
 	
 stage('UrbanCode Deploy to Dev') {	
    step([$class: 'UCDeployPublisher',
-        siteName: 'ucd',
+        siteName: 'Default',
         deploy: [
                 $class: 'com.urbancode.jenkins.plugins.ucdeploy.DeployHelper$DeployBlock',
                 deployApp: 'JPetStore',
