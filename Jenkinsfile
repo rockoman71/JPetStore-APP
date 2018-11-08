@@ -19,14 +19,13 @@ node {
         siteName: 'ucd',
 	component: [
             $class: 'com.urbancode.jenkins.plugins.ucdeploy.VersionHelper$VersionBlock',
-           componentName: 'Blue-Green Demo-bgdemo',
+           componentName: 'JPetStore-APP',
            delivery: [
                 $class: 'com.urbancode.jenkins.plugins.ucdeploy.DeliveryHelper$Push',
                 pushVersion: '${BUILD_NUMBER}',
-		baseDir: '.',
+		baseDir: './dist/*',
                 fileIncludePatterns: 'README.md',
-                fileExcludePatterns: '',
-                pushProperties: 'dockerImageTag=${BUILD_NUMBER}\ndockerImageId=x',
+                fileExcludePatterns: '',                
                 pushDescription: 'Pushed from Jenkins'
 	    ]	
 	]	
@@ -38,12 +37,11 @@ stage('UrbanCode Deploy to Dev') {
         siteName: 'ucd',
         deploy: [
                 $class: 'com.urbancode.jenkins.plugins.ucdeploy.DeployHelper$DeployBlock',
-                deployApp: 'Blue-Green Demo',
-                deployEnv: 'Dev',
-                deployProc: 'Deploy Application from YAML',            
-                deployVersions: 'Blue-Green Demo-bgdemo:${BUILD_NUMBER}\nbgdemo Webpage:2.2',
-		//deployVersions: 'Blue-Green Demo-bgdemo:${BUILD_NUMBER}\nbgdemo Webpage:latest',
-                deployOnlyChanged: false
+                deployApp: 'JPetStore',
+                deployEnv: 'DEV-1',
+                deployProc: 'Deploy JPetStore',            
+                deployVersions: 'JPetStore-APP:${BUILD_NUMBER}',		
+                deployOnlyChanged: true
         ]		
     ])
   }
