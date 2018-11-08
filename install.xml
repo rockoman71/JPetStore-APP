@@ -1,0 +1,28 @@
+<project name="JPetStore" default="install" basedir=".">
+
+  <property name="install.dir" location="C:\JPetStore"/>
+  <property name="tomcat.dir" location="C:\Tomcat7"/>
+
+  <target name="install">
+  	
+  	<delete dir="${install.dir}/war" failonerror="false"/>
+  	<mkdir dir="${install.dir}/war"/>
+  	<mkdir dir="${install.dir}/images"/>
+  	
+    <unzip dest="${install.dir}/war" src="${ant.project.name}.war" overwrite="true"/>
+  	
+  	<mkdir dir="${install.dir}/war/WEB-INF/classes"/>
+    <filter token="WAR_PATH" value="${install.dir}/war"/>
+    <filter token="IMAGES_PATH" value="${install.dir}/images"/>
+    <filter token="DB_USER" value="${db.user}"/>
+    <filter token="DB_PWD" value="${db.pwd}"/>
+  	<copy todir="${install.dir}/war/WEB-INF/classes" filtering="true">
+  		<fileset dir="${basedir}">
+  			<include name="**/*.properties"/>
+  		</fileset>
+  	</copy>
+  	<copy todir="${tomcat.dir}/conf/Catalina/localhost" filtering="true" file="jpetstore.xml"/>
+  	
+  </target>
+
+</project>

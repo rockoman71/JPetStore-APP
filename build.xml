@@ -1,0 +1,146 @@
+<project name="JPetStore" default="all" basedir=".">
+  <property name="build.dir" location="build" />
+  <property name="lib.dir" location="lib"/>
+  <property name="src.domain.dir" location="src/domain"/>
+  <property name="src.web.dir" location="src/web"/>
+  <property name="src.tomcat.dir" location="src/tomcat"/>
+  <property name="src.tests.dir" location="tests/domain"/>
+  <property name="tests.classes.dir" location="${build.dir}/tests" />
+  <property name="tests.data.dir" location="${build.dir}/test-data" />
+  <property name="dist.tests.dir" location="test-data" />
+  <property name="tests.reports.dir" location="test-reports" />
+	
+	
+  <property name="dist.dir" location="dist"/>
+  <property name="build.dir" location="build"/>
+  <property name="debug" value="on"/>
+
+  <path id="classpath">
+    <!--<pathelement location="${src}/"/>-->
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+  <path id="tests.classes.path">
+	   <path refid="classpath"/>
+	   <pathelement location="${src.domain.dir}"/>
+	   <pathelement location="${tests.classes.dir}"/>
+  </path>  
+	<path id="project.class.path">
+	    <fileset dir="${lib.dir}" includes="**/*.jar" />
+	    <pathelement path="${build.dir}/classes"/>
+	 </path>
+
+  <target name="clean" >
+    <delete dir="${dist.dir}"/>
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+  	<mkdir dir="${build.dir}/classes"/>
+    <javac srcdir="${src.domain.dir}" destdir="${build.dir}/classes" deprecation="off" debug="${debug}" source="1.4">
+      <classpath refid="classpath"/>
+    </javac>
+  	<copy todir="${build.dir}/classes">
+      <fileset dir="${src.domain.dir}">
+      	<include name="**/*.xml"/>
+      </fileset>
+  	</copy>
+  </target>
+
+  <target name="jar" depends="compile">
+  	<mkdir dir="${dist.dir}"/>
+    <jar file="${dist.dir}/${ant.project.name}.jar">
+      <fileset dir="${build.dir}/classes"/>
+    </jar>
+  </target>
+
+  <target name="war" depends="jar">
+  	<mkdir dir="${build.dir}/war"/>
+    <copy todir="${build.dir}/war">
+      <fileset dir="${src.web.dir}">
+        <include name="**/*.jsp"/>
+        <include name="**/*.html"/>
+        <include name="**/*.properties"/>
+        <include name="**/*.tld"/>
+        <include name="**/*.xml"/>
+      </fileset>
+    </copy>
+  	<mkdir dir="${build.dir}/war/WEB-INF/lib"/>
+  	<copy file="${dist.dir}/${ant.project.name}.jar" todir="${build.dir}/war/WEB-INF/lib"/>
+  	<copy todir="${build.dir}/war/WEB-INF/lib">
+	  <fileset dir="${lib.dir}">
+	  	<include name="*.jar"/>
+      </fileset>
+  	</copy>
+    <jar jarfile="${dist.dir}/${ant.project.name}.war">
+      <fileset dir="${build.dir}/war">
+        <include name="**/*"/>
+      </fileset>
+    </jar>
+  </target>
+	
+  <target name="dist" depends="war">
+  	<copy todir="${dist.dir}">
+	    <fileset dir="${src.domain.dir}">
+	      <include name="**/*.properties"/>
+	    </fileset>
+  	</copy>
+  	<copy todir="${dist.dir}">
+	    <fileset dir="${basedir}">
+	      <include name="install.xml"/>
+	    </fileset>
+  	</copy>
+  	<copy todir="${dist.dir}">
+	    <fileset dir="${src.tomcat.dir}">
+	      <include name="jpetstore.xml"/>
+	    </fileset>
+  	</copy>
+  		
+  </target>
+  	
+  <target name="compile-tests" depends="compile">
+	   <mkdir dir="${build.dir}"/>
+	   <mkdir dir="${tests.classes.dir}"/>
+	    	
+	 
+	   <javac destdir="${tests.classes.dir}"
+	          debug="${compiler.debug}" 
+	          deprecation="${compiler.deprecation}"
+	          classpathref="project.class.path">
+	       	  <src path="${src.tests.dir}" />
+	   </javac>
+	   <copy todir="${tests.classes.dir}" includeEmptyDirs="false">
+	        <fileset dir="${src.tests.dir}">
+	            <include name="**" />
+	            <exclude name="**/*.java"/>
+	        </fileset>
+	   </copy>
+  </target>	
+	
+	<target name="test" depends="compile-tests">
+        <mkdir dir="work"/>
+        <mkdir dir="${tests.data.dir}/junit"/>
+        <mkdir dir="${dist.tests.dir}"/>
+        <mkdir dir="${tests.reports.dir}/junit"/>
+        <junit printsummary="on" haltonfailure="false" fork="no" dir="work" showoutput="false">
+        	<classpath location="${tests.classes.dir}"/>
+            <classpath refid="tests.classes.path"/>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+            <batchtest todir="${tests.data.dir}/junit">
+                <fileset dir="${tests.classes.dir}">
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+		<junitreport todir="${tests.reports.dir}/junit">
+			<fileset dir="${tests.data.dir}/junit">
+		    	<include name="TEST-*.xml"/>
+		  	</fileset>
+		  	<report format="frames" todir="${tests.reports.dir}/junit"/>
+		</junitreport>
+
+	</target>
+	
+  <target name="all" depends="dist, test" />
+
+</project>
