@@ -41,7 +41,7 @@ stage('UrbanCode Deploy to Dev') {
                 deployEnv: 'DEV-1',
                 deployProc: 'Deploy JPetStore',            
                 deployVersions: 'JPetStore-APP:${BUILD_NUMBER}\nJPetStore-WEB:latest',		
-                deployOnlyChanged: true
+                deployOnlyChanged: false
         ]		
     ])
   }
